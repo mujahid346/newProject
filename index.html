@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Feedback Survey</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    .container { width: min(760px, 92%); margin: 40px auto; }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+    h1 { margin-top: 0; color: #16325c; }
+    .intro { color: #5b6472; line-height: 1.55; }
+    .field { margin: 22px 0; }
+    label, legend { display: block; font-weight: 700; margin-bottom: 8px; }
+    input[type="text"], input[type="email"], select, textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      font-size: 16px;
+      background: white;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    fieldset { border: 0; padding: 0; margin: 22px 0; }
+    .radio-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .radio-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    .radio-card input { margin-right: 6px; }
+    .hint { font-size: 13px; color: #6b7280; margin-top: 6px; }
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      background: #1d4ed8;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { background: #1e40af; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    #status { margin-top: 16px; text-align: center; font-weight: 700; }
+    .success { color: #15803d; }
+    .error { color: #b91c1c; }
+    .dashboard-link {
+      display: inline-block;
+      margin-top: 18px;
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <h1>Student Feedback Survey</h1>
+      <p class="intro">
+        Your feedback helps us improve the learning experience. The survey takes about
+        2–3 minutes. You may leave your name and email blank if you prefer to respond anonymously.
+      </p>
+
+      <form id="surveyForm">
+        <div class="field">
+          <label for="course">Course / Class *</label>
+          <input id="course" name="course" type="text" placeholder="Example: CSCI 201" required />
+        </div>
+
+        <div class="field">
+          <label for="year">Student year *</label>
+          <select id="year" name="year" required>
+            <option value="">Choose one</option>
+            <option>Freshman</option>
+            <option>Sophomore</option>
+            <option>Junior</option>
+            <option>Senior</option>
+            <option>Graduate</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <fieldset>
+          <legend>Overall, how would you rate this class? *</legend>
+          <div class="radio-row">
+            <label class="radio-card"><input type="radio" name="overallRating" value="1" required>1</label>
+            <label class="radio-card"><input type="radio" name="overallRating" value="2">2</label>
+            <label class="radio-card"><input type="radio" name="overallRating" value="3">3</label>
+            <label class="radio-card"><input type="radio" name="overallRating" value="4">4</label>
+            <label class="radio-card"><input type="radio" name="overallRating" value="5">5</label>
+          </div>
+          <div class="hint">1 = Poor, 5 = Excellent</div>
+        </fieldset>
+
+        <fieldset>
+          <legend>How clear are the lessons and explanations? *</legend>
+          <div class="radio-row">
+            <label class="radio-card"><input type="radio" name="clarity" value="1" required>1</label>
+            <label class="radio-card"><input type="radio" name="clarity" value="2">2</label>
+            <label class="radio-card"><input type="radio" name="clarity" value="3">3</label>
+            <label class="radio-card"><input type="radio" name="clarity" value="4">4</label>
+            <label class="radio-card"><input type="radio" name="clarity" value="5">5</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>How useful are the assignments and learning materials? *</legend>
+          <div class="radio-row">
+            <label class="radio-card"><input type="radio" name="materials" value="1" required>1</label>
+            <label class="radio-card"><input type="radio" name="materials" value="2">2</label>
+            <label class="radio-card"><input type="radio" name="materials" value="3">3</label>
+            <label class="radio-card"><input type="radio" name="materials" value="4">4</label>
+            <label class="radio-card"><input type="radio" name="materials" value="5">5</label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="pace">How is the pace of the class? *</label>
+          <select id="pace" name="pace" required>
+            <option value="">Choose one</option>
+            <option>Too slow</option>
+            <option>A little slow</option>
+            <option>About right</option>
+            <option>A little fast</option>
+            <option>Too fast</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="helpful">What is helping you learn the most?</label>
+          <textarea id="helpful" name="helpful"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="improve">What is one thing we could improve? *</label>
+          <textarea id="improve" name="improve" required></textarea>
+        </div>
+
+        <div class="field">
+          <label for="comments">Additional comments</label>
+          <textarea id="comments" name="comments"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="studentName">Name (optional)</label>
+          <input id="studentName" name="studentName" type="text" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email (optional)</label>
+          <input id="email" name="email" type="email" />
+        </div>
+
+        <button id="submitBtn" type="submit">Submit Feedback</button>
+        <div id="status" aria-live="polite"></div>
+      </form>
+
+      <a class="dashboard-link" href="dashboard.html">View survey dashboard →</a>
+    </section>
+  </main>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    const form = document.getElementById("surveyForm");
+    const statusBox = document.getElementById("status");
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) {
+        statusBox.textContent = "Add your Google Apps Script Web App URL in index.html first.";
+        statusBox.className = "error";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+      statusBox.textContent = "";
+
+      try {
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        for (const [key, value] of formData.entries()) params.append(key, value);
+
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params.toString()
+        });
+
+        form.reset();
+        statusBox.textContent = "Thank you! Your feedback has been submitted.";
+        statusBox.className = "success";
+      } catch (error) {
+        statusBox.textContent = "Something went wrong. Please try again.";
+        statusBox.className = "error";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Feedback";
+      }
+    });
+  </script>
+</body>
+</html>
