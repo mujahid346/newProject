@@ -512,7 +512,7 @@ let catChart, distChart;
 let statsLoaded = false;
 
 async function loadStats() {
-  if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('PASTE_YOUR')) {
+  if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('https://script.google.com/macros/s/AKfycbznWd1BRiwr4Byi890Aikj2j1TExGfx4-HSdAONZyWmX0_7xyYnOgCWoXq1ElTzfdc-qA/exec')) {
     document.getElementById('statsMeta').textContent = 'Backend not configured yet — see README.';
     return;
   }
