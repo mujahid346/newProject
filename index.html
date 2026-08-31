@@ -1,222 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Feedback Survey</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f7fb;
-      color: #1f2937;
-    }
-    .container { width: min(760px, 92%); margin: 40px auto; }
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: 0 8px 30px rgba(0,0,0,.08);
-    }
-    h1 { margin-top: 0; color: #16325c; }
-    .intro { color: #5b6472; line-height: 1.55; }
-    .field { margin: 22px 0; }
-    label, legend { display: block; font-weight: 700; margin-bottom: 8px; }
-    input[type="text"], input[type="email"], select, textarea {
-      width: 100%;
-      padding: 12px 13px;
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
-      font-size: 16px;
-      background: white;
-    }
-    textarea { min-height: 110px; resize: vertical; }
-    fieldset { border: 0; padding: 0; margin: 22px 0; }
-    .radio-row { display: flex; flex-wrap: wrap; gap: 10px; }
-    .radio-card {
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
-      padding: 10px 14px;
-      cursor: pointer;
-    }
-    .radio-card input { margin-right: 6px; }
-    .hint { font-size: 13px; color: #6b7280; margin-top: 6px; }
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      background: #1d4ed8;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover { background: #1e40af; }
-    button:disabled { opacity: .6; cursor: not-allowed; }
-    #status { margin-top: 16px; text-align: center; font-weight: 700; }
-    .success { color: #15803d; }
-    .error { color: #b91c1c; }
-    .dashboard-link {
-      display: inline-block;
-      margin-top: 18px;
-      color: #1d4ed8;
-      text-decoration: none;
-      font-weight: 700;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --paper: #F3F1EA;
+    --paper-line: #D8D2C4;
+    --ink: #1F2A44;
+    --ink-soft: #4B5470;
+    --brass: #B8862E;
+    --brass-dark: #93691F;
+    --card: #FFFFFF;
+    --green: #3D6B4F;
+    --rule: #C9C2B0;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--paper);
+    background-image:
+      linear-gradient(var(--paper) 0, var(--paper) 100%),
+      repeating-linear-gradient(180deg, transparent 0, transparent 39px, var(--paper-line) 40px);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+  header.page-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 8px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .title-block h1{
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 2.15rem;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .title-block p{
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+  }
+  .ledger-mark{
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: var(--brass-dark);
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap: 4px;
+    margin: 28px 0 32px;
+    border-bottom: 1px solid var(--rule);
+  }
+  nav.tabs button{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    background: none;
+    border: none;
+    padding: 10px 4px;
+    margin-right: 28px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    position: relative;
+    top: 1px;
+  }
+  nav.tabs button.active{
+    color: var(--ink);
+    border-bottom: 2px solid var(--brass);
+  }
+
+  section.view{ display:none; }
+  section.view.active{ display:block; }
+
+  .q-group{
+    margin-bottom: 30px;
+  }
+  .q-group + .q-group{
+    border-top: 1px solid var(--rule);
+    padding-top: 26px;
+  }
+  .q-num{
+    display:inline-block;
+    font-family: 'Source Serif 4', serif;
+    color: var(--brass-dark);
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  label.q-label{
+    display:block;
+    font-size: 1.02rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  input[type=text], textarea{
+    width: 100%;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.98rem;
+    padding: 10px 12px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--card);
+    color: var(--ink);
+  }
+  textarea{ min-height: 96px; resize: vertical; }
+  input[type=text]:focus, textarea:focus, button:focus-visible{
+    outline: 2px solid var(--brass);
+    outline-offset: 1px;
+  }
+
+  .scale{
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .scale label{
+    flex: 1 1 90px;
+    text-align:center;
+    cursor:pointer;
+  }
+  .scale input[type=radio]{
+    position:absolute;
+    opacity:0;
+    width:0; height:0;
+  }
+  .scale .opt{
+    display:block;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 10px 6px;
+    background: var(--card);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    transition: border-color .15s, background .15s, color .15s;
+  }
+  .scale .num{
+    display:block;
+    font-family:'Source Serif 4', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .scale input[type=radio]:checked + .opt{
+    border-color: var(--brass);
+    background: #FBF3E3;
+    color: var(--brass-dark);
+  }
+  .scale input[type=radio]:focus-visible + .opt{
+    outline: 2px solid var(--brass);
+    outline-offset: 1px;
+  }
+
+  .submit-row{
+    margin-top: 36px;
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+  button.primary{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.98rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 13px 26px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  button.primary:hover{ background: #16203A; }
+  button.primary:disabled{ opacity:0.55; cursor:not-allowed; }
+
+  .status-msg{ font-size: 0.9rem; color: var(--ink-soft); }
+  .status-msg.ok{ color: var(--green); }
+  .status-msg.err{ color: #A3402F; }
+
+  /* Stats view */
+  .stat-row{
+    display:flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .stat-card{
+    flex: 1 1 150px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .stat-card .big{
+    font-family: 'Source Serif 4', serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stat-card .cap{
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    margin-top: 6px;
+  }
+  .chart-card{
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 20px 22px 8px;
+    margin-bottom: 24px;
+  }
+  .chart-card h3{
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.05rem;
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  .charts-2col{
+    display:flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .charts-2col .chart-card{ flex: 1 1 300px; }
+
+  .comments-list{
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .comments-list li{
+    padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    font-size: 0.95rem;
+  }
+  .comments-list li:first-child{ border-top:none; }
+  .comments-list .meta{
+    color: var(--brass-dark);
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+  .empty-note{
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    padding: 12px 0;
+  }
+  .refresh-row{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom: 18px;
+  }
+  .refresh-row button{
+    background:none;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 7px 14px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    cursor:pointer;
+  }
+  .refresh-row button:hover{ border-color: var(--brass); color: var(--brass-dark); }
+
+  @media (max-width: 480px){
+    .title-block h1{ font-size: 1.7rem; }
+    .scale label{ flex: 1 1 70px; }
+  }
+</style>
 </head>
 <body>
-  <main class="container">
-    <section class="card">
-      <h1>Student Feedback Survey</h1>
-      <p class="intro">
-        Your feedback helps us improve the learning experience. The survey takes about
-        2–3 minutes. You may leave your name and email blank if you prefer to respond anonymously.
-      </p>
+<div class="wrap">
 
-      <form id="surveyForm">
-        <div class="field">
-          <label for="course">Course / Class *</label>
-          <input id="course" name="course" type="text" placeholder="Example: CSCI 201" required />
+  <header class="page-head">
+    <div class="title-block">
+      <h1 id="pageTitle">Course Feedback</h1>
+      <p id="pageSub">Your responses help shape how this course is taught.</p>
+    </div>
+    <div class="ledger-mark">anonymous &amp; appreciated</div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-view="form">Give Feedback</button>
+    <button class="tab-btn" data-view="stats">Results</button>
+  </nav>
+
+  <!-- ===================== FEEDBACK FORM ===================== -->
+  <section class="view active" id="view-form">
+    <form id="feedbackForm">
+
+      <div class="q-group">
+        <label class="q-label" for="course"><span class="q-num">1.</span>Which course is this feedback for?</label>
+        <input type="text" id="course" name="course" placeholder="e.g. CS 301 — Algorithms" required>
+      </div>
+
+      <div class="q-group">
+        <label class="q-label"><span class="q-num">2.</span>How clear were the lectures and materials?</label>
+        <div class="scale" data-field="clarity">
+          <label><input type="radio" name="clarity" value="1" required><span class="opt"><span class="num">1</span>Not clear</span></label>
+          <label><input type="radio" name="clarity" value="2"><span class="opt"><span class="num">2</span>Rarely clear</span></label>
+          <label><input type="radio" name="clarity" value="3"><span class="opt"><span class="num">3</span>Somewhat</span></label>
+          <label><input type="radio" name="clarity" value="4"><span class="opt"><span class="num">4</span>Clear</span></label>
+          <label><input type="radio" name="clarity" value="5"><span class="opt"><span class="num">5</span>Very clear</span></label>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="year">Student year *</label>
-          <select id="year" name="year" required>
-            <option value="">Choose one</option>
-            <option>Freshman</option>
-            <option>Sophomore</option>
-            <option>Junior</option>
-            <option>Senior</option>
-            <option>Graduate</option>
-            <option>Other</option>
-          </select>
+      <div class="q-group">
+        <label class="q-label"><span class="q-num">3.</span>How engaging were the classes?</label>
+        <div class="scale" data-field="engagement">
+          <label><input type="radio" name="engagement" value="1" required><span class="opt"><span class="num">1</span>Not at all</span></label>
+          <label><input type="radio" name="engagement" value="2"><span class="opt"><span class="num">2</span>A little</span></label>
+          <label><input type="radio" name="engagement" value="3"><span class="opt"><span class="num">3</span>Somewhat</span></label>
+          <label><input type="radio" name="engagement" value="4"><span class="opt"><span class="num">4</span>Engaging</span></label>
+          <label><input type="radio" name="engagement" value="5"><span class="opt"><span class="num">5</span>Very engaging</span></label>
         </div>
+      </div>
 
-        <fieldset>
-          <legend>Overall, how would you rate this class? *</legend>
-          <div class="radio-row">
-            <label class="radio-card"><input type="radio" name="overallRating" value="1" required>1</label>
-            <label class="radio-card"><input type="radio" name="overallRating" value="2">2</label>
-            <label class="radio-card"><input type="radio" name="overallRating" value="3">3</label>
-            <label class="radio-card"><input type="radio" name="overallRating" value="4">4</label>
-            <label class="radio-card"><input type="radio" name="overallRating" value="5">5</label>
-          </div>
-          <div class="hint">1 = Poor, 5 = Excellent</div>
-        </fieldset>
-
-        <fieldset>
-          <legend>How clear are the lessons and explanations? *</legend>
-          <div class="radio-row">
-            <label class="radio-card"><input type="radio" name="clarity" value="1" required>1</label>
-            <label class="radio-card"><input type="radio" name="clarity" value="2">2</label>
-            <label class="radio-card"><input type="radio" name="clarity" value="3">3</label>
-            <label class="radio-card"><input type="radio" name="clarity" value="4">4</label>
-            <label class="radio-card"><input type="radio" name="clarity" value="5">5</label>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>How useful are the assignments and learning materials? *</legend>
-          <div class="radio-row">
-            <label class="radio-card"><input type="radio" name="materials" value="1" required>1</label>
-            <label class="radio-card"><input type="radio" name="materials" value="2">2</label>
-            <label class="radio-card"><input type="radio" name="materials" value="3">3</label>
-            <label class="radio-card"><input type="radio" name="materials" value="4">4</label>
-            <label class="radio-card"><input type="radio" name="materials" value="5">5</label>
-          </div>
-        </fieldset>
-
-        <div class="field">
-          <label for="pace">How is the pace of the class? *</label>
-          <select id="pace" name="pace" required>
-            <option value="">Choose one</option>
-            <option>Too slow</option>
-            <option>A little slow</option>
-            <option>About right</option>
-            <option>A little fast</option>
-            <option>Too fast</option>
-          </select>
+      <div class="q-group">
+        <label class="q-label"><span class="q-num">4.</span>How available was the professor for questions and support?</label>
+        <div class="scale" data-field="support">
+          <label><input type="radio" name="support" value="1" required><span class="opt"><span class="num">1</span>Unavailable</span></label>
+          <label><input type="radio" name="support" value="2"><span class="opt"><span class="num">2</span>Rarely</span></label>
+          <label><input type="radio" name="support" value="3"><span class="opt"><span class="num">3</span>Somewhat</span></label>
+          <label><input type="radio" name="support" value="4"><span class="opt"><span class="num">4</span>Available</span></label>
+          <label><input type="radio" name="support" value="5"><span class="opt"><span class="num">5</span>Very available</span></label>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="helpful">What is helping you learn the most?</label>
-          <textarea id="helpful" name="helpful"></textarea>
+      <div class="q-group">
+        <label class="q-label"><span class="q-num">5.</span>How fair was the grading?</label>
+        <div class="scale" data-field="fairness">
+          <label><input type="radio" name="fairness" value="1" required><span class="opt"><span class="num">1</span>Unfair</span></label>
+          <label><input type="radio" name="fairness" value="2"><span class="opt"><span class="num">2</span>Somewhat unfair</span></label>
+          <label><input type="radio" name="fairness" value="3"><span class="opt"><span class="num">3</span>Neutral</span></label>
+          <label><input type="radio" name="fairness" value="4"><span class="opt"><span class="num">4</span>Fair</span></label>
+          <label><input type="radio" name="fairness" value="5"><span class="opt"><span class="num">5</span>Very fair</span></label>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="improve">What is one thing we could improve? *</label>
-          <textarea id="improve" name="improve" required></textarea>
+      <div class="q-group">
+        <label class="q-label"><span class="q-num">6.</span>How well was the course organized?</label>
+        <div class="scale" data-field="organization">
+          <label><input type="radio" name="organization" value="1" required><span class="opt"><span class="num">1</span>Disorganized</span></label>
+          <label><input type="radio" name="organization" value="2"><span class="opt"><span class="num">2</span>Somewhat</span></label>
+          <label><input type="radio" name="organization" value="3"><span class="opt"><span class="num">3</span>Adequate</span></label>
+          <label><input type="radio" name="organization" value="4"><span class="opt"><span class="num">4</span>Organized</span></label>
+          <label><input type="radio" name="organization" value="5"><span class="opt"><span class="num">5</span>Very organized</span></label>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="comments">Additional comments</label>
-          <textarea id="comments" name="comments"></textarea>
+      <div class="q-group">
+        <label class="q-label"><span class="q-num">7.</span>Your overall rating of the course</label>
+        <div class="scale" data-field="overall">
+          <label><input type="radio" name="overall" value="1" required><span class="opt"><span class="num">1</span>Poor</span></label>
+          <label><input type="radio" name="overall" value="2"><span class="opt"><span class="num">2</span>Below average</span></label>
+          <label><input type="radio" name="overall" value="3"><span class="opt"><span class="num">3</span>Average</span></label>
+          <label><input type="radio" name="overall" value="4"><span class="opt"><span class="num">4</span>Good</span></label>
+          <label><input type="radio" name="overall" value="5"><span class="opt"><span class="num">5</span>Excellent</span></label>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="studentName">Name (optional)</label>
-          <input id="studentName" name="studentName" type="text" />
-        </div>
+      <div class="q-group">
+        <label class="q-label" for="comment"><span class="q-num">8.</span>Anything you'd like to add? (optional)</label>
+        <textarea id="comment" name="comment" placeholder="Specific, constructive comments are most useful."></textarea>
+      </div>
 
-        <div class="field">
-          <label for="email">Email (optional)</label>
-          <input id="email" name="email" type="email" />
-        </div>
+      <div class="submit-row">
+        <button type="submit" class="primary" id="submitBtn">Submit feedback</button>
+        <span class="status-msg" id="statusMsg"></span>
+      </div>
+    </form>
+  </section>
 
-        <button id="submitBtn" type="submit">Submit Feedback</button>
-        <div id="status" aria-live="polite"></div>
-      </form>
+  <!-- ===================== STATS VIEW ===================== -->
+  <section class="view" id="view-stats">
+    <div class="refresh-row">
+      <span class="status-msg" id="statsMeta">&nbsp;</span>
+      <button id="refreshBtn" type="button">Refresh</button>
+    </div>
 
-      <a class="dashboard-link" href="dashboard.html">View survey dashboard →</a>
-    </section>
-  </main>
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="big" id="statCount">–</div>
+        <div class="cap">Responses</div>
+      </div>
+      <div class="stat-card">
+        <div class="big" id="statAvgOverall">–</div>
+        <div class="cap">Average overall rating</div>
+      </div>
+      <div class="stat-card">
+        <div class="big" id="statTopCourse">–</div>
+        <div class="cap">Most-reviewed course</div>
+      </div>
+    </div>
 
-  <script>
-    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+    <div class="charts-2col">
+      <div class="chart-card">
+        <h3>Average rating by category</h3>
+        <canvas id="chartCategories" height="220"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Overall rating distribution</h3>
+        <canvas id="chartDistribution" height="220"></canvas>
+      </div>
+    </div>
 
-    const form = document.getElementById("surveyForm");
-    const statusBox = document.getElementById("status");
-    const submitBtn = document.getElementById("submitBtn");
+    <div class="chart-card">
+      <h3>Recent comments</h3>
+      <ul class="comments-list" id="commentsList">
+        <li class="empty-note">No comments yet.</li>
+      </ul>
+    </div>
+  </section>
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+</div>
 
-      if (GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) {
-        statusBox.textContent = "Add your Google Apps Script Web App URL in index.html first.";
-        statusBox.className = "error";
-        return;
-      }
+<script>
+/* ======================================================================
+   CONFIGURATION — edit these two lines for your class
+   ====================================================================== */
+const CONFIG = {
+  // Paste the Web App URL you get after deploying Code.gs (see README)
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbx3bGXcBqNg3IchOj57kKJycZv54tWhHfrIc8y-wIFuxjLp4J9K0TLjVzhueitMDYp7Jg/exec",
+  PROFESSOR_NAME: "Professor Zhang",
+};
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Submitting...";
-      statusBox.textContent = "";
+document.getElementById('pageTitle').textContent = CONFIG.PROFESSOR_NAME + " — Course Feedback";
 
-      try {
-        const formData = new FormData(form);
-        const params = new URLSearchParams();
-        for (const [key, value] of formData.entries()) params.append(key, value);
+/* ---------------------- Tab switching ---------------------- */
+const tabButtons = document.querySelectorAll('.tab-btn');
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabButtons.forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    if (btn.dataset.view === 'stats') loadStats();
+  });
+});
 
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: params.toString()
-        });
+/* ---------------------- Form submission ---------------------- */
+const form = document.getElementById('feedbackForm');
+const submitBtn = document.getElementById('submitBtn');
+const statusMsg = document.getElementById('statusMsg');
 
-        form.reset();
-        statusBox.textContent = "Thank you! Your feedback has been submitted.";
-        statusBox.className = "success";
-      } catch (error) {
-        statusBox.textContent = "Something went wrong. Please try again.";
-        statusBox.className = "error";
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Feedback";
-      }
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('https://script.google.com/macros/s/AKfycbx3bGXcBqNg3IchOj57kKJycZv54tWhHfrIc8y-wIFuxjLp4J9K0TLjVzhueitMDYp7Jg/exec')) {
+    statusMsg.textContent = 'Backend not configured yet — see README to connect Google Sheets.';
+    statusMsg.className = 'status-msg err';
+    return;
+  }
+
+  const data = new FormData(form);
+  const payload = {
+    course: data.get('course') || '',
+    clarity: data.get('clarity'),
+    engagement: data.get('engagement'),
+    support: data.get('support'),
+    fairness: data.get('fairness'),
+    organization: data.get('organization'),
+    overall: data.get('overall'),
+    comment: data.get('comment') || '',
+    timestamp: new Date().toISOString(),
+  };
+
+  submitBtn.disabled = true;
+  statusMsg.textContent = 'Sending…';
+  statusMsg.className = 'status-msg';
+
+  try {
+    // Sent as text/plain to keep this a "simple request" so Apps Script
+    // doesn't need CORS preflight handling. See README for details.
+    await fetch(CONFIG.SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
     });
-  </script>
+    // no-cors means we can't read the response, so we assume success.
+    form.reset();
+    statusMsg.textContent = 'Thank you — your feedback was submitted.';
+    statusMsg.className = 'status-msg ok';
+  } catch (err) {
+    statusMsg.textContent = 'Something went wrong. Please try again.';
+    statusMsg.className = 'status-msg err';
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+/* ---------------------- Stats loading ---------------------- */
+let catChart, distChart;
+let statsLoaded = false;
+
+async function loadStats() {
+  if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('PASTE_YOUR')) {
+    document.getElementById('statsMeta').textContent = 'Backend not configured yet — see README.';
+    return;
+  }
+
+  document.getElementById('statsMeta').textContent = 'Loading…';
+  try {
+    const res = await fetch(CONFIG.SCRIPT_URL + '?action=stats');
+    const stats = await res.json();
+    renderStats(stats);
+    document.getElementById('statsMeta').textContent =
+      'Updated ' + new Date().toLocaleTimeString();
+    statsLoaded = true;
+  } catch (err) {
+    document.getElementById('statsMeta').textContent = 'Could not load results.';
+  }
+}
+
+function renderStats(stats) {
+  document.getElementById('statCount').textContent = stats.count ?? 0;
+  document.getElementById('statAvgOverall').textContent =
+    stats.count ? stats.averages.overall.toFixed(1) : '–';
+  document.getElementById('statTopCourse').textContent = stats.topCourse || '–';
+
+  const categories = ['clarity', 'engagement', 'support', 'fairness', 'organization'];
+  const labels = ['Clarity', 'Engagement', 'Support', 'Fairness', 'Organization'];
+  const values = categories.map(c => stats.count ? stats.averages[c] : 0);
+
+  const ctx1 = document.getElementById('chartCategories');
+  if (catChart) catChart.destroy();
+  catChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: '#B8862E',
+        borderRadius: 3,
+        maxBarThickness: 42,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 5, ticks: { stepSize: 1 }, grid: { color: '#E7E2D6' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  const dist = stats.distribution || {1:0,2:0,3:0,4:0,5:0};
+  const ctx2 = document.getElementById('chartDistribution');
+  if (distChart) distChart.destroy();
+  distChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['1 star', '2 stars', '3 stars', '4 stars', '5 stars'],
+      datasets: [{
+        data: [dist[1]||0, dist[2]||0, dist[3]||0, dist[4]||0, dist[5]||0],
+        backgroundColor: ['#A3402F', '#C77B4B', '#C9A227', '#7FA06F', '#3D6B4F'],
+        borderColor: '#FFFFFF',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'IBM Plex Sans' } } } }
+    }
+  });
+
+  const list = document.getElementById('commentsList');
+  list.innerHTML = '';
+  const comments = (stats.recentComments || []).filter(c => c.comment && c.comment.trim());
+  if (!comments.length) {
+    list.innerHTML = '<li class="empty-note">No comments yet.</li>';
+  } else {
+    comments.forEach(c => {
+      const li = document.createElement('li');
+      const p = document.createElement('div');
+      p.textContent = c.comment;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = (c.course ? c.course + ' · ' : '') + 'overall ' + c.overall + '/5';
+      li.appendChild(p);
+      li.appendChild(meta);
+      list.appendChild(li);
+    });
+  }
+}
+
+document.getElementById('refreshBtn').addEventListener('click', loadStats);
+</script>
 </body>
 </html>
